@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 import './SignIn.css';
 
 class SignIn extends React.Component {
@@ -41,8 +42,9 @@ class SignIn extends React.Component {
     }
     
     handleSubmit(event) {
-        this.ws.send(this.state.message)
+        // this.ws.send(this.state.message)
         // this.handleMessageChannelChange(this.state.message);
+        console.log(this.state)
         event.preventDefault();
     }
 
@@ -66,12 +68,15 @@ class SignIn extends React.Component {
                     </select>
                     </label>
                 </div>
-                <div>
+                {/* <div>
                     <textarea className='chat' value={this.state.channel} readOnly={true}/>
                 </div>
                 <div>
                     <input type="text" onChange={this.handleMessageChange} />
-                </div>
+                </div> */}
+                <button>
+                    <Link to="/chat">Entrar</Link>
+                </button>
                 <input type="submit" value="Enviar" />
             </form>
             </div>

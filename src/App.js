@@ -1,6 +1,8 @@
 import * as React from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import "./App.css";
+import Chat from "./components/chat/Chat";
+import SignIn from "./components/sign-in/SignIn";
 
 function App() {
   return (
@@ -9,8 +11,8 @@ function App() {
       <h1>Welcome to React Router!</h1>
       {/* Those are its children */}
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="about" element={<About />} />
+        <Route path="/" element={<SignIn />} />
+        <Route path="chat" element={<Chat />} />
       </Routes>
     </div>
   );
