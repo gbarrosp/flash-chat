@@ -7,7 +7,7 @@ class SignIn extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {user: '', channel: '', hasUser: false};
+        this.state = {user: '', hasUser: false};
     
         this.handleUserChange = this.handleUserChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -28,7 +28,8 @@ class SignIn extends React.Component {
     render() {
         let hasUser = this.state.hasUser
         return (
-        <div className="content column center">
+        <div className="content column center-center">
+            <h1>Flash Chat</h1>
             <div className="column center panel">
             <form onSubmit={this.handleSubmit}>
                 <div className='row mb-20'>
@@ -43,7 +44,7 @@ class SignIn extends React.Component {
                           }}
                     />
                 </div>
-                <div className='row'>
+                <div className='row center-center'>
                     <Button type="submit" variant="contained">ENTRAR</Button>
                 </div>
                 {

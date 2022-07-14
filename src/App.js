@@ -5,10 +5,9 @@ import Chat from "./components/chat/Chat";
 import SignIn from "./components/sign-in/SignIn";
 
 function App() {
+  {/* This is the base layout */}
   return (
-    <div className="App">
-      {/* This is the base layout */}
-      <h1>Flash Chat</h1>
+    <div className="base-color">
       {/* Those are its children */}
       <Routes>
         <Route path="/" element={<SignIn />} />

@@ -15,20 +15,17 @@ code {
 .column {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 
 .row {
   display: flex;
   flex-direction: row;
-  align-items: center;
-  justify-content: center;
 }
 
-.center {
-  align-items: center;
+/* row & column */
+.center-center {
   justify-content: center;
+  align-items: center;
 }
 
 .mb-20 {
