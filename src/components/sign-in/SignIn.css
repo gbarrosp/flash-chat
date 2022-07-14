@@ -1,5 +1,5 @@
 .content {
-    min-height: 100vh;
+    display: flex;
     font-size: calc(10px + 2vmin);
     color: white;
     background-color: #282c34;
@@ -27,7 +27,6 @@
 	}
 }
 
-.chat {
-    min-width: 400px;
-    min-height: 30vh;
+.white-text {
+    color: white !important;
 }

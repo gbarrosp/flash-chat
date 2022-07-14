@@ -15,9 +15,22 @@ code {
 .column {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 
 .center {
   align-items: center;
   justify-content: center;
+}
+
+.mb-20 {
+  margin-bottom: 20px;
 }
