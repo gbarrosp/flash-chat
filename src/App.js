@@ -1,5 +1,4 @@
-import * as React from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import Chat from "./components/chat/Chat";
 import SignIn from "./components/sign-in/SignIn";

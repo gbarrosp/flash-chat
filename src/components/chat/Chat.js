@@ -1,3 +1,5 @@
+import SendIcon from '@mui/icons-material/Send';
+import IconButton from '@mui/material/IconButton';
 import React from 'react';
 import './Chat.css';
 
@@ -34,16 +36,19 @@ class Chat extends React.Component {
 
     render() {
         return (
-        <div className="content column center">
-            <div className="column center panel">
+        <div className="content column start-center">
+            <h1>Flash Chat</h1>
+            <div className="column center-center panel">
             <form onSubmit={this.handleSubmit}>
                 <div>
                     <textarea className='chat' value={this.state.channel} readOnly={true}/>
                 </div>
-                <div>
+                <div className="row start-center">
                     <input type="text" onChange={this.handleMessageChange} />
+                    <IconButton color="primary" type="submit">
+                        <SendIcon/>
+                    </IconButton>
                 </div>
-                <input type="submit" value="Enviar" />
             </form>
             </div>
         </div>
