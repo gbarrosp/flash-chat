@@ -22,6 +22,7 @@ class SignIn extends React.Component {
         event.preventDefault();
         if (this.state.user) {
             this.setState({hasUser:true});
+            this.props.onSignIn(this.state.user)
         }
     }
 

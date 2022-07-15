@@ -7,7 +7,7 @@ class Chat extends React.Component {
     constructor(props) {
         super(props);
         var self = this;
-        this.state = {message: '', channel: ''};
+        this.state = {message: '', channel: '', user: this.props.user};
         this.handleMessageChange = this.handleMessageChange.bind(this);
         this.handleMessageChannelChange = this.handleMessageChannelChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -30,7 +30,8 @@ class Chat extends React.Component {
     }
     
     handleSubmit(event) {
-        this.ws.send(this.state.message)
+        let now = new Date().toLocaleTimeString().slice(0,5)
+        this.ws.send(`${now} ${this.state.user}: ${this.state.message}`)
         event.preventDefault();
     }
 

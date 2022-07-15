@@ -12,6 +12,10 @@
     animation: pulse 5s infinite;
 }
 
+textarea {
+    resize: none;
+}
+
 @keyframes pulse {
 	0% {
 		box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
