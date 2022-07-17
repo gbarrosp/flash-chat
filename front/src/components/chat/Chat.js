@@ -12,7 +12,7 @@ class Chat extends React.Component {
         this.handleMessageChannelChange = this.handleMessageChannelChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
 
-        this.ws = new WebSocket("ws:192.168.18.71:8888/ws");
+        this.ws = new WebSocket("ws:172.26.0.1:8888/ws");
         this.ws.onopen = function(evt) { 
             this.setState({channel: `Conectado\n`});
         };

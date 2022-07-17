@@ -46,7 +46,7 @@ def callback(ch, method, properties, body):
             client.socket.write_message(body)
 
 
-def start_consumer_room(room):
+def start_consumer_room(room='0'):
     asyncio.set_event_loop(asyncio.new_event_loop())
     channel = get_connection().channel()
     channel.queue_declare(queue=room)
@@ -78,8 +78,8 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         logging.info('WebSocket opened')
         clients.append(
             {
-                room: '0',
-                socket: self
+                'room': '0',
+                'socket': self
             }
         )
 
@@ -93,8 +93,8 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         logging.info('WebSocket closed')
         clients.remove(
             {
-                room: '0',
-                socket: self
+                'room': '0',
+                'socket': self
             }
         )
 
@@ -136,6 +136,7 @@ ws = WebServer()
 
 def start_server():
     asyncio.set_event_loop(asyncio.new_event_loop())
+    logging.info('Starting server')
     ws.run()
 
 
@@ -143,10 +144,8 @@ if __name__ == "__main__":
 
     try:
         logging.info('Starting thread Tornado')
-        threadC = Thread(target=start_consumers)
+        threadC = Thread(target=start_consumer_room)
         threadC.start()
-
-        from threading import Thread
 
         t = Thread(target=start_server, args=())
         t.daemon = True
@@ -162,7 +161,8 @@ if __name__ == "__main__":
             disconnect_to_rabbitmq()
         except Exception:
             pass
-    except:
-        stopTornado()
+    except Exception as e:
+        logging.error(e)
+        # stopTornado()
 
         logging.info('See you...')
