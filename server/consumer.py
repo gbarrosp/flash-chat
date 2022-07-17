@@ -42,8 +42,8 @@ def get_connection():
 def callback(ch, method, properties, body):
     print(" [x] %s" % (body))
     for client in clients:
-        if method.routing_key == client.room:
-            client.socket.write_message(body)
+        if method.routing_key == client['room']:
+            client['socket'].write_message(body)
 
 
 def start_consumer_room(room='0'):
@@ -147,7 +147,7 @@ if __name__ == "__main__":
         threadC = Thread(target=start_consumer_room)
         threadC.start()
 
-        t = Thread(target=start_server, args=())
+        t = Thread(target=start_server)
         t.daemon = True
         t.start()
 

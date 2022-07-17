@@ -6,15 +6,19 @@ import './Chat.css';
 class Chat extends React.Component {
     constructor(props) {
         super(props);
-        var self = this;
-        this.state = {message: '', channel: '', user: this.props.user};
+        this.state = {message: '', channel: '', user: this.props.user ? this.props.user : '' };
         this.handleMessageChange = this.handleMessageChange.bind(this);
         this.handleMessageChannelChange = this.handleMessageChannelChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+    }
 
+    componentDidMount() {
+        var self = this;
         this.ws = new WebSocket("ws:172.26.0.1:8888/ws");
-        this.ws.onopen = function(evt) { 
-            this.setState({channel: `Conectado\n`});
+        this.ws.onopen = function(evt) {
+            if (this.state && this.state.user) {
+                self.handleMessageChannelChange(`${this.state.user} conectado`)
+            }
         };
         this.ws.onmessage = function(evt){
             self.handleMessageChannelChange(evt.data)
@@ -31,7 +35,11 @@ class Chat extends React.Component {
     
     handleSubmit(event) {
         let now = new Date().toLocaleTimeString().slice(0,5)
-        this.ws.send(`${now} ${this.state.user}: ${this.state.message}`)
+        let message = `${now} ${this.state.user}: ${this.state.message}`
+        this.ws.send(JSON.stringify({
+            room: '0',
+            message: message
+        }))
         event.preventDefault();
     }
 
