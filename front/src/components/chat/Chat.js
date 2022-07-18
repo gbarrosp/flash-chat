@@ -6,8 +6,9 @@ import './Chat.css';
 class Chat extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {message: '', channel: '', user: this.props.user ? this.props.user : '' };
+        this.state = {message: '',room: '0', channel: '', user: this.props.user ? this.props.user : '' };
         this.handleMessageChange = this.handleMessageChange.bind(this);
+        this.handleRoomChange = this.handleRoomChange.bind(this);
         this.handleMessageChannelChange = this.handleMessageChannelChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -29,6 +30,10 @@ class Chat extends React.Component {
         this.setState({message: event.target.value});
     }
     
+    handleRoomChange(event) {
+        this.setState({room: event.target.value});
+    }
+    
     handleMessageChannelChange(message) {
         this.setState({channel: `${this.state.channel}${message}\n`});
     }
@@ -37,7 +42,7 @@ class Chat extends React.Component {
         let now = new Date().toLocaleTimeString().slice(0,5)
         let message = `${now} ${this.state.user}: ${this.state.message}`
         this.ws.send(JSON.stringify({
-            room: '0',
+            room: this.state.room,
             message: message
         }))
         event.preventDefault();
@@ -53,6 +58,11 @@ class Chat extends React.Component {
                     <textarea className='chat' value={this.state.channel} readOnly={true}/>
                 </div>
                 <div className="row start-center">
+                    <select onChange={this.handleRoomChange}>
+                        <option value="0">Geral</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select>
                     <input type="text" onChange={this.handleMessageChange} />
                     <IconButton color="primary" type="submit">
                         <SendIcon/>

@@ -9,14 +9,13 @@ from threading import Thread
 import logging
 import json
 
-logging.basicConfig(level=logging.INFO)
-
 # web socket clients connected.
 clients = []
 rooms = ['0']
+consumers = []
 
 connection = pika.BlockingConnection()
-logging.info('Connected:localhost')
+# logging.info('Connected:localhost')
 channel = connection.channel()
 
 class Room:
@@ -31,6 +30,19 @@ def available_room(room_id):
 def create_room(room_id):
     rooms.append(room_id)
     start_consumer_room(room_id)
+    consumers.append(Thread(target=start_consumer_room, args=(room_id,)))
+    consumers[-1].start()
+
+def check_room(socket, room_id):
+    print('==== CHECK ROOM ====')
+    index = next((i for i, item in enumerate(clients) if item["socket"] == socket), None)
+    clients[index]['room'] = room_id
+
+
+def remove_client(socket):
+    index = next((i for i, item in enumerate(clients) if item["socket"] == socket), None)
+    clients.remove(clients[index])
+
 
 def get_connection():
     credentials = pika.PlainCredentials('guest', 'guest')
@@ -43,10 +55,12 @@ def callback(ch, method, properties, body):
     print(" [x] %s" % (body))
     for client in clients:
         if method.routing_key == client['room']:
-            client['socket'].write_message(body)
-
+            client['socket'].write_message(body.decode())
+            print('==== MESSAGE SENT TO SOCKET ====')
+            print(body.decode())
 
 def start_consumer_room(room='0'):
+    print('=== NEW ROOM ===')
     asyncio.set_event_loop(asyncio.new_event_loop())
     channel = get_connection().channel()
     channel.queue_declare(queue=room)
@@ -58,6 +72,8 @@ def start_consumer_room(room='0'):
     channel.start_consuming()
 
 def send_message_to_queue(message_obj):
+    print('==== SEND TO QUEUE ====')
+    print(message_obj)
     connection = pika.BlockingConnection()
     channel = connection.channel()
     channel.queue_declare(queue=message_obj['room'])
@@ -70,12 +86,12 @@ def send_message_to_queue(message_obj):
 def disconnect_to_rabbitmq():
     channel.stop_consuming()
     connection.close()
-    logging.info('Disconnected from Rabbitmq')
+    # logging.info('Disconnected from Rabbitmq')
 
 
 class SocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
-        logging.info('WebSocket opened')
+        # logging.info('WebSocket opened')
         clients.append(
             {
                 'room': '0',
@@ -84,19 +100,18 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         )
 
     def on_message(self, message):
+        print('======== MESSAGE ON SOCKET ========')
+        print(message)
         message_obj = json.loads(message)
+        check_room(self, message_obj['room'])
+        send_message_to_queue(message_obj)
         if available_room(message_obj['room']):
             create_room(message_obj['room'])
-        send_message_to_queue(message_obj)
+
 
     def on_close(self):
-        logging.info('WebSocket closed')
-        clients.remove(
-            {
-                'room': '0',
-                'socket': self
-            }
-        )
+        # logging.info('WebSocket closed')
+        remove_client(self)
 
     def check_origin(self, origin):
         return True
@@ -136,16 +151,19 @@ ws = WebServer()
 
 def start_server():
     asyncio.set_event_loop(asyncio.new_event_loop())
-    logging.info('Starting server')
+    # logging.info('Starting server')
     ws.run()
 
 
 if __name__ == "__main__":
 
     try:
-        logging.info('Starting thread Tornado')
-        threadC = Thread(target=start_consumer_room)
-        threadC.start()
+        # logging.info('Starting thread Tornado')
+        # threadC = Thread(target=start_consumer_room)
+        # threadC.start()
+
+        consumers.append(Thread(target=start_consumer_room))
+        consumers[0].start()
 
         t = Thread(target=start_server)
         t.daemon = True
@@ -157,12 +175,13 @@ if __name__ == "__main__":
         except SyntaxError:
             pass
         try:
-            logging.info('Disconnecting from RabbitMQ..')
+            # logging.info('Disconnecting from RabbitMQ..')
             disconnect_to_rabbitmq()
         except Exception:
             pass
     except Exception as e:
-        logging.error(e)
+        print(e)
+        # logging.error(e)
         # stopTornado()
 
-        logging.info('See you...')
+        # logging.info('See you...')
