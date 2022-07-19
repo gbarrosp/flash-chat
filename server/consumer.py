@@ -29,7 +29,6 @@ def available_room(room_id):
 
 def create_room(room_id):
     rooms.append(room_id)
-    start_consumer_room(room_id)
     consumers.append(Thread(target=start_consumer_room, args=(room_id,)))
     consumers[-1].start()
 
@@ -52,8 +51,10 @@ def get_connection():
     return conn
 
 def callback(ch, method, properties, body):
-    print(" [x] %s" % (body))
+    print('=== MESSAGE ON QUEUE ===')
+    print('Message on room {}'.format(method.routing_key))
     for client in clients:
+        print('Client on room {}'.format(client['room']))
         if method.routing_key == client['room']:
             client['socket'].write_message(body.decode())
             print('==== MESSAGE SENT TO SOCKET ====')
@@ -61,6 +62,7 @@ def callback(ch, method, properties, body):
 
 def start_consumer_room(room='0'):
     print('=== NEW ROOM ===')
+    print('Room {} opened'.format(room))
     asyncio.set_event_loop(asyncio.new_event_loop())
     channel = get_connection().channel()
     channel.queue_declare(queue=room)
@@ -91,7 +93,7 @@ def disconnect_to_rabbitmq():
 
 class SocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
-        # logging.info('WebSocket opened')
+        print('WebSocket opened')
         clients.append(
             {
                 'room': '0',
@@ -104,9 +106,11 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         print(message)
         message_obj = json.loads(message)
         check_room(self, message_obj['room'])
-        send_message_to_queue(message_obj)
         if available_room(message_obj['room']):
+            print('Creating new room')
             create_room(message_obj['room'])
+        print('Sending message from socket to queue')
+        send_message_to_queue(message_obj)
 
 
     def on_close(self):
@@ -158,10 +162,6 @@ def start_server():
 if __name__ == "__main__":
 
     try:
-        # logging.info('Starting thread Tornado')
-        # threadC = Thread(target=start_consumer_room)
-        # threadC.start()
-
         consumers.append(Thread(target=start_consumer_room))
         consumers[0].start()
 
